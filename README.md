@@ -1,69 +1,57 @@
-# 📊 SU2: Análisis de Desempleo y Subempleo en la Región de Los Ríos
+# 📊 Desempleo en la Región de Los Ríos (ENE 2010–2025)
 
-Este proyecto realiza un análisis exploratorio y visualización de la tasa combinada de desocupación y subempleo (SU2) en la Región de Los Ríos, Chile. Utiliza datos oficiales del INE.Stat y busca identificar tendencias, segmentaciones y patrones relevantes por grupo etario y sexo, contribuyendo a la comprensión del fenómeno laboral regional.
-
----
-
-## 🚀 Características principales
-
-- Extracción, limpieza y validación de datos laborales
-- Análisis exploratorio por grupo etario, sexo y total
-- Visualizaciones interactivas y accesibles (Plotly, Seaborn, Matplotlib)
-- Organización modular mediante notebooks y scripts
-- Buenas prácticas de *Clean Code* y reproducibilidad
+Análisis exploratorio y visualizaciones interactivas del desempleo en la Región de Los Ríos, Chile, utilizando la Encuesta Nacional de Empleo (INE). El repositorio incluye notebooks reproducibles, un pipeline de limpieza y un sitio HTML con gráficos interactivos estilo The Economist (paleta amarillo–azul–gris, accesible para daltónicos).
 
 ---
 
-## 📁 Estructura del proyecto
+## 🚀 Qué incluye
+
+- Limpieza, validación y unificación de datos (scripts en `scripts/`).
+- Notebooks de EDA por tramo etario, sexo y total (`notebooks/`).
+- Sitio web estático en `docs/` que muestra todas las visualizaciones con un navbar automático.
+- Estilo visual consistente y accesible (Plotly) sin cambiar tipografías.
+
+---
+
+## 📁 Estructura
 
 ```
-su2-desempleo-losrios/
-│
-├── data/
-│   ├── raw/                # Datos originales descargados del INE
-│   └── processed/          # Datos limpios y combinados para análisis
-│
-├── notebooks/
-│   ├── 01_eda_desempleo.ipynb          # Análisis por tramo etario
-│   ├── 02_eda_desempleo_por_sexo.ipynb # Análisis por sexo
-│   └── 03_eda_desempleo_total.ipynb    # Evolución general del desempleo
-│
-├── scripts/
-│   ├── load_clean_edad.py      # Limpieza y carga de datos por edad
-│   ├── load_clean_sexo.py      # Limpieza y carga de datos por sexo
-│   ├── merge_edad_sexo.py      # Unificación de datasets limpios
-│   ├── validate_data.py        # Validaciones básicas de integridad
-│   └── __init__.py
-│
-├── utils/
-│   ├── plot_helpers.py         # Funciones auxiliares para visualización
-│   └── __init__.py
-│
-├── tests/
-│   ├── test_cleaning.py        # Tests unitarios para funciones de limpieza
-│   └── __pycache__/
-│
-├── config.py                   # Configuración general
-├── requirements.txt            # Dependencias del entorno
-└── README.md
+DesempleoLosRios/
+├─ data/
+│  ├─ raw/                # Datos originales (INE)
+│  └─ processed/          # CSV limpios y combinados
+├─ notebooks/
+│  ├─ 01_eda_desempleo.ipynb          # EDA general y por edad
+│  ├─ 02_eda_desempleo_por_sexo.ipynb # EDA por sexo
+│  └─ 03_eda_desempleo_total.ipynb    # Otras vistas
+├─ scripts/
+│  ├─ load_clean_edad.py
+│  ├─ load_clean_sexo.py
+│  ├─ merge_edad_sexo.py
+│  ├─ validate_data.py
+│  └─ build_site.py        # Ejecuta notebook y genera docs/plots.json
+├─ docs/                   # Sitio estático (HTML/CSS/JS)
+│  ├─ index.html           # Plantilla con navbar + secciones dinámicas
+│  ├─ interactive.js       # Render Plotly y navegación
+│  └─ plots.json           # Salida generada desde los notebooks
+├─ tests/
+│  └─ test_cleaning.py
+├─ requirements.txt
+└─ README.md
 ```
 
 ---
 
 ## 🧪 Requisitos
 
-Desarrollado en Python 3.10+.
+- Python 3.11 (recomendado)
+- Paquetes en `requirements.txt` (incluye pandas, plotly, seaborn, nbconvert, scipy, etc.)
 
-**Dependencias principales:**
-- pandas
-- matplotlib
-- seaborn
-- plotly
-- jupyterlab
-
-Instala las dependencias con:
+Instalación:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -71,37 +59,62 @@ pip install -r requirements.txt
 
 ## 🛠️ Uso rápido
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/SanMaBruno/su2-desempleo-losrios.git
-   cd su2-desempleo-losrios
-   ```
-2. Activa tu entorno virtual y instala dependencias
-3. Ejecuta los notebooks en el orden recomendado
-4. Revisa las visualizaciones generadas
+1) Generar el sitio interactivo (navbar + gráficos)
+
+```bash
+python scripts/build_site.py
+```
+
+Esto ejecuta `notebooks/01_eda_desempleo.ipynb`, extrae todas las figuras Plotly y escribe `docs/plots.json` que el HTML usa para mostrar los gráficos.
+
+2) Abrir el sitio
+
+- Abrir `docs/index.html` directamente en el navegador, o
+- Servir localmente (opcional):
+
+```bash
+python -m http.server 5501
+# luego abrir http://127.0.0.1:5501/docs/index.html
+```
+
+3) Ejecutar tests (opcional)
+
+```bash
+pytest -q
+```
 
 ---
 
-## 📈 Ejemplo de visualizaciones
+## 📈 Visualizaciones destacadas
 
-Visualizaciones generadas por los notebooks:
+- Evolución del desempleo total (con línea de tendencia y marca COVID-19).
+- Comparación por grupos etarios (líneas + marcadores, paleta accesible).
+- Comparación por sexo (Hombres, Mujeres y Total con líneas diferenciadas).
 
-- ![Desempleo por edad](notebooks/img/desempleo_edad.png)
-- ![Desempleo por sexo](notebooks/img/desempleo_sexo.png)
+Todas las gráficas implementan “hover” unificado con spikelines verticales para facilitar la lectura comparada.
 
 ---
 
-## 👨‍💻 Autor
+## � Datos
 
-**Bruno San Martín Navarro**  
-Ingeniero en Informática & Científico de Datos  
-Especialista en ciencia de datos y desarrollo de soluciones escalables
-Data Analyst CEA uACH, Valdivia
+- Fuente: INE – Encuesta Nacional de Empleo (ENE).
+- Cobertura: Región de Los Ríos, 2010–2025.
+- Estructura principal: `periodo`, `valor`, `dimension` (sexo/tramo_edad), `categoria`.
 
-[GitHub](https://github.com/SanMaBruno) · [LinkedIn](https://www.linkedin.com/in/sanmabruno/)
+---
+
+## 🔧 Mantenimiento habitual
+
+- Actualizar plots tras cambios en notebooks:
+
+```bash
+python scripts/build_site.py
+```
+
+- Ajustes de estilo del sitio: editar `docs/styles.css` y `docs/interactive.js`.
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto se distribuye bajo licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+MIT. Ver `LICENSE` (si aplica).
